@@ -26,7 +26,15 @@ class GetRates(ServiceBase):
             'mailing-scenario', xmlns="http://www.canadapost.ca/ws/ship/rate-v2")
         def add_child(child_name, parent=request_tree):
             return etree.SubElement(parent, child_name)
-        add_child("customer-number").text = unicode(self.auth.customer_number)
+
+        if self.auth.customer_number:
+            add_child("customer-number").text = unicode(self.auth.customer_number)
+        else:
+            # When customer_number is not provided we need to get the 'counter' rate
+            # rather than a rate for a specific customer 
+            add_child("quote-type").text = 'counter'
+
+
         if self.auth.contract_number:
             add_child("contract-id").text = unicode(self.auth.contract_number)
 
